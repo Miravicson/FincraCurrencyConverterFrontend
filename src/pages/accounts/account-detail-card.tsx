@@ -1,5 +1,6 @@
 import { AccountEntity } from '@/_generated';
 import { Button } from '@/components/ui/button';
+import { formatCurrencyWithSymbol } from '@/lib/utils';
 import { CONVERT, FUND_ACCOUNT } from '@/routes/route-paths';
 import { Link } from 'react-router-dom';
 
@@ -11,10 +12,12 @@ function Balance({
   name,
   value,
   symbol,
+  currencyCode,
 }: {
   name: string;
   value: string;
   symbol: string;
+  currencyCode: string;
 }) {
   return (
     <div className="py-6 px-8 mt-4 border-r border-gray-200 last:border-r-0">
@@ -22,8 +25,7 @@ function Balance({
         {name}
       </h1>
       <p className={`flex justify-center py-2 font-bold text-3xl`}>
-        {symbol}
-        {value}
+        {formatCurrencyWithSymbol(value, currencyCode, symbol)}
       </p>
     </div>
   );
@@ -42,11 +44,13 @@ export default function AccountDetailsCard({
           name={`Available ${currencyCode} balance`}
           symbol={currencySymbol}
           value={availableBalance}
+          currencyCode={currencyCode}
         />
         <Balance
           name={`Pending ${currencyCode} balance`}
           symbol={currencySymbol}
           value={pendingBalance}
+          currencyCode={currencyCode}
         />
       </div>
       <div className="flex justify-center mt-4 space-x-4">

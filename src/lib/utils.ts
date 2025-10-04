@@ -2,10 +2,11 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import pluralize from 'pluralize';
 import { DateTime } from 'luxon';
-import { PAGES_WITH_SEARCHBAR } from './constant';
+import { currencyCodeToSymbolMap, PAGES_WITH_SEARCHBAR } from './constant';
 import axios from 'axios';
-import { PaginationMeta } from '@/_generated';
+import { PaginationMeta, TransactionEntity } from '@/_generated';
 import { startCase } from 'lodash-es';
+import { CellContext } from '@tanstack/react-table';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -164,4 +165,95 @@ export function formatChildAge(birthDate: string | Date): string {
   if (days > 0) parts.push(`${days}d`);
 
   return parts.length > 0 ? parts.join(' ') : '0 day';
+}
+
+/**
+ * Format a number as currency using the Intl.NumberFormat API
+ * @param amount - The amount to format
+ * @param currency - The currency code (e.g., 'USD', 'EUR', 'NGN')
+ * @param locale - The locale to use for formatting (defaults to user's locale)
+ * @returns Formatted currency string
+ */
+export function formatCurrency(
+  amount: number | string,
+  currency = 'NGN',
+  locale?: string,
+): string {
+  const numericAmount =
+    typeof amount === 'string' ? parseFloat(amount) : amount;
+
+  if (isNaN(numericAmount)) {
+    return '';
+  }
+
+  const userLocale = locale || navigator.language || 'en-US';
+
+  return new Intl.NumberFormat(userLocale, {
+    style: 'currency',
+    currency: currency,
+  }).format(numericAmount);
+}
+
+/**
+ * Format currency for display with custom symbol
+ * Useful when you have your own currency symbols from AccountEntity
+ * @param amount - The amount to format
+ * @param currencyCode - Currency code for locale-based number formatting
+ * @param customSymbol - Custom currency symbol to use (e.g., '₦', '$', '£')
+ * @param locale - Locale for number formatting
+ * @returns Formatted currency string with custom symbol
+ */
+export function formatCurrencyWithSymbol(
+  amount: number | string,
+  currencyCode: string,
+  customSymbol?: string | undefined,
+  locale?: string,
+): string {
+  const numericAmount =
+    typeof amount === 'string' ? parseFloat(amount) : amount;
+
+  if (isNaN(numericAmount)) {
+    return '';
+  }
+
+  const userLocale = locale || navigator.language || 'en-US';
+
+  // Format the number part without currency
+  const formattedNumber = new Intl.NumberFormat(userLocale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numericAmount);
+
+  // Use custom symbol if provided, otherwise use Intl to get the symbol
+  if (customSymbol) {
+    return `${customSymbol}${formattedNumber}`;
+  }
+
+  // Fallback to standard currency formatting
+  return new Intl.NumberFormat(userLocale, {
+    style: 'currency',
+    currency: currencyCode,
+  }).format(numericAmount);
+}
+
+export function formatCurrencyFromTxnEntityCell(
+  props: CellContext<TransactionEntity, unknown>,
+) {
+  type Key = keyof typeof currencyCodeToSymbolMap;
+  const { fromCurrency, toCurrency, originalAmount, convertedAmount } =
+    props.row.original || {};
+  const fromSymbol = currencyCodeToSymbolMap[fromCurrency as Key];
+  const toSymbol = currencyCodeToSymbolMap[toCurrency as Key];
+  const formattedFromAmount = formatCurrencyWithSymbol(
+    originalAmount,
+    fromCurrency,
+    fromSymbol,
+  );
+
+  const formattedToAmount = formatCurrencyWithSymbol(
+    convertedAmount,
+    toCurrency,
+    toSymbol,
+  );
+  return `${formattedFromAmount} ---> ${formattedToAmount}`;
 }

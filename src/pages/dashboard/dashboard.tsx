@@ -9,6 +9,7 @@ import {
 import { StatisticCardWrapper } from '@/components/statistic-card-wrapper';
 import { columns } from './recent-transactions.table';
 import { usePagination } from '@/lib/hooks/use-pagination';
+import { formatCurrencyWithSymbol } from '@/lib/utils';
 
 export default function Dashboard() {
   const { paginationMeta, updatePaginationMeta } = usePagination();
@@ -29,7 +30,7 @@ export default function Dashboard() {
           <StaticsticCard
             icon={account.currencyCode as StatisticCardIcons}
             title={account.currencyName}
-            mainStat={`${account.availableBalance}`}
+            mainStat={`${formatCurrencyWithSymbol(account.availableBalance, account.currencyCode, account.currencySymbol)}`}
             key={account.currencyCode}
           />
         ))}

@@ -7,7 +7,7 @@ interface FincraLogoProps {
 export function FincraLogo({ className }: FincraLogoProps) {
   return (
     <img
-      src="/public/fincra-website-logo-colored.png"
+      src="/fincra-website-logo-colored.png"
       alt="Fincra Logo"
       className={cn('object-contain', className)}
     />
