@@ -40,7 +40,7 @@ export function DashboardNavlink({
   ) : null;
 
   return (
-    <NavLink to={link} className={classNameFunc}>
+    <NavLink to={link} className={classNameFunc} end>
       {normPreComponent ?? preElement}
       {text}
       {normPostComponent ?? postElement}

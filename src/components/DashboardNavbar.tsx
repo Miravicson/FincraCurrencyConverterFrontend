@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, LucideIcon } from 'lucide-react';
+import { LucideIcon, Home, Coins, ArrowRightLeft } from 'lucide-react';
 import { DashboardNavlink } from './DashboardNavlink';
 import { ACCOUNTS, DASHBOARD, TRANSACTIONS } from '@/routes/route-paths';
 
@@ -24,17 +24,17 @@ export function DashboardNavbar({ isMobile }: DashboardNavbarProps) {
     {
       link: DASHBOARD,
       text: 'Home',
-      preComponent: LayoutDashboard,
+      preComponent: Home,
     },
     {
       link: ACCOUNTS,
       text: 'Accounts',
-      preComponent: LayoutDashboard,
+      preComponent: Coins,
     },
     {
       link: TRANSACTIONS,
       text: 'Transactions',
-      preComponent: LayoutDashboard,
+      preComponent: ArrowRightLeft,
     },
   ];
 

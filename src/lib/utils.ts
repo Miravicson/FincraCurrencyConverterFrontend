@@ -4,7 +4,7 @@ import pluralize from 'pluralize';
 import { DateTime } from 'luxon';
 import { currencyCodeToSymbolMap, PAGES_WITH_SEARCHBAR } from './constant';
 import axios from 'axios';
-import { PaginationMeta, TransactionEntity } from '@/_generated';
+import { AccountEntity, PaginationMeta, TransactionEntity } from '@/_generated';
 import { startCase } from 'lodash-es';
 import { CellContext } from '@tanstack/react-table';
 
@@ -256,4 +256,21 @@ export function formatCurrencyFromTxnEntityCell(
     toSymbol,
   );
   return `${formattedFromAmount} ---> ${formattedToAmount}`;
+}
+
+/**
+ * Convert accounts array to an object keyed by currency code
+ * @param accounts - Array of account entities
+ * @returns Object with currency codes as keys and account entities as values
+ */
+export function accountsToMap(
+  accounts: AccountEntity[],
+): Record<string, AccountEntity> {
+  return accounts.reduce(
+    (acc, account) => {
+      acc[account.currencyCode] = account;
+      return acc;
+    },
+    {} as Record<string, AccountEntity>,
+  );
 }

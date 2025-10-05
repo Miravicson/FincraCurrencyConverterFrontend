@@ -24,13 +24,13 @@ import { useState } from 'react';
 import { BookOpen, Search } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Checkbox } from '../ui/checkbox';
-// import { MyPagination } from '../CreateParentForm/my-pagination';
 import { PaginationMeta } from '@/_generated';
 import { UpdatePaginationMetaFunc } from '@/lib/hooks/use-pagination';
 import { TableSize } from './table-size';
 import { TableFilter, TableFilterProps } from './table-filter';
 import { TableSort, TableSortProps } from './table-sort';
 import { Link } from 'react-router-dom';
+import { MyPagination } from './my-pagination';
 
 type DashbordTableV2Props<D> = {
   resourceTitle: string;
@@ -159,13 +159,13 @@ export function DashboardTableV2<D>({
             />
             <span>entries</span>
           </div>
-          {/* <MyPagination
+          <MyPagination
             currentPage={paginationMeta.currentPage}
             onSetCurrentPage={(value) =>
               updatePaginationMeta('currentPage', value)
             }
             totalPages={paginationMeta.lastPage}
-          /> */}
+          />
 
           <div className="flex flex-nowrap space-x-4 rounded">
             <Button

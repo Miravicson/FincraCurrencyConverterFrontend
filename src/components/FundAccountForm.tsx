@@ -18,7 +18,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
 import {
   Card,
   CardContent,
@@ -37,7 +36,7 @@ import {
 import { queryClient } from '@/lib/query-client';
 import { LoadingSpinner } from './Loader';
 import { useToast } from '@/lib/toast-provider';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DEFAULT_WAIT_BEFORE_NAVIGAGION_SECS } from '@/lib/constant';
 import { ACCOUNTS } from '@/routes/route-paths';
 
@@ -64,6 +63,10 @@ export function FundAccountForm() {
     },
   });
 
+  const [_searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { alertError, alertSuccess } = useToast();
+
   const { data: accountsResponse, isLoading: isFetchingUserAccounts } =
     useGetUserAccounts();
 
@@ -82,21 +85,24 @@ export function FundAccountForm() {
     },
   });
 
-  const { alertError, alertSuccess } = useToast();
-  const navigate = useNavigate();
-
-  const showNotificationThenNavigate = (message?: string) => {
-    alertSuccess(message ?? 'Account funded successfully');
-    setTimeout(
-      () => navigate(ACCOUNTS, { replace: true }),
-      DEFAULT_WAIT_BEFORE_NAVIGAGION_SECS,
-    );
-  };
-
   const accounts: AccountEntity[] = accountsResponse?.data || [];
 
+  /** Helper to show toast + navigate after delay */
+  const showNotificationThenNavigate = (
+    message?: string,
+    currencyCode?: string,
+  ) => {
+    alertSuccess(message ?? 'Account funded successfully');
+    setTimeout(() => {
+      const targetUrl = `${ACCOUNTS}?selected=${currencyCode ?? ''}`;
+      navigate(targetUrl, { replace: true });
+    }, DEFAULT_WAIT_BEFORE_NAVIGAGION_SECS);
+  };
+
+  /** Handle form submit */
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const { accountId, amount } = values;
+    const selectedAccount = accounts.find((a) => a.id === accountId);
 
     fundAccountMutation(
       {
@@ -106,7 +112,10 @@ export function FundAccountForm() {
       {
         onSuccess() {
           form.reset();
-          showNotificationThenNavigate();
+          showNotificationThenNavigate(
+            'Account funded successfully',
+            selectedAccount?.currencyCode,
+          );
         },
         onError() {
           alertError('Funding failed. Please try again.');
@@ -142,8 +151,14 @@ export function FundAccountForm() {
                 <FormItem>
                   <FormLabel>Account</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    onValueChange={(val) => {
+                      field.onChange(val);
+                      const selected = accounts.find((a) => a.id === val);
+                      if (selected?.currencyCode) {
+                        setSearchParams({ selected: selected.currencyCode });
+                      }
+                    }}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -153,7 +168,7 @@ export function FundAccountForm() {
                     <SelectContent>
                       {accounts.map((account) => (
                         <SelectItem key={account.id} value={account.id}>
-                          {account.currencyName} ({account.currencyCode}) -{' '}
+                          {account.currencyName} ({account.currencyCode}) –{' '}
                           {account.currencySymbol}
                           {account.availableBalance}
                         </SelectItem>
@@ -179,6 +194,7 @@ export function FundAccountForm() {
               )}
             />
           </CardContent>
+
           <CardFooter>
             <Button className="w-full" disabled={isPending}>
               Fund Account

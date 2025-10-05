@@ -42,8 +42,9 @@ export default function Transactions() {
         //   onFilter: (value) => setFilter(value),
         // }}
         updatePaginationMeta={updatePaginationMeta}
-        // onViewRow={onTableRowClick}
         resourceTitle="Transactions"
+        showSelectCheck={false}
+
       />
     </>
   );
