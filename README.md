@@ -3,17 +3,6 @@
 
 ## Developing the app
 
-### Generating zod schemas from dto
-
- 1. Run the following command to generate a zod schema from a dto file
-
-    ```bash
-    pnpm ts-to-zod src/_generated/createHospitalDto.ts src/_generated/createHospitalDtoSchema.ts
-    ```
-
-    where `createHospitalDto.ts` is the dto file and `createHospitalDtoSchema.ts` is the output zod schema
- 2. Use the generated schema as a starter code boilerplate for further creating your form schema
-
 ## 🎉 Tech Stack
 
 - **React** - A JavaScript library for building user interfaces.
@@ -108,7 +97,7 @@ frontend/
 
 ## How to find the right hook for your API call
 
-1. Reference the [swagger documentation](https://v2.api.bloomers.ng/swagger).
+1. Reference the [swagger documentation](https://fincra-currency-converter-backend-production.up.railway.app/swagger).
 
 2. The CRUD (CREATE-READ-UPDATE-DELETE) acronym is used for GET/POST/PATCH/PUT/DELETE Request
 
